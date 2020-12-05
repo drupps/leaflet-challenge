@@ -3,9 +3,25 @@ var queryURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
+  console.log(data);
     // Once we get a response, send the data.features object to the createFeatures function
-    createFeatures(data.features);
+    for (var i = 0; i < response.length; i++) {
+      var geometry = response[i].geometry;
+    
+    if (geometry) {
+      L.marker([features.geometry.coordinates[1], features.geometry.coordinates[0], features.geometry.coordinates[2]]).addTo(myMap);
+    }
+  }
   });
+
+
+
+
+
+
+
+
+
   
   function createFeatures(earthquakeData) {
   
