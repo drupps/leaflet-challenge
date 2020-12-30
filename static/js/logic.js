@@ -7,17 +7,8 @@ d3.json(queryURL, function (data) {
   console.log(data);
   // Once we get a response, send the data.features object to the createFeatures function
   createFeatures(data.features);
-
-  //   for (var i = 0; i < response.length; i++) {
-  //     var geometry = response[i].geometry;
-
-  //   if (geometry) {
-  //     L.marker([features.geometry.coordinates[1], features.geometry.coordinates[0], features.geometry.coordinates[2]]).addTo(myMap);
-  //   }
-  // }
 });
 
-// 17/1/activities/10 is earthquake data
 
 function createFeatures(earthquakeData) {
   // Define a function we want to run once for each feature in the features array
@@ -36,6 +27,28 @@ function createFeatures(earthquakeData) {
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
     onEachFeature: addTooltip,
+    pointToLayer: function (geoJsonPoint, latlng) {
+      return L.circleMarker(latlng);
+    },
+    style: function (geoJsonFeature) {
+      mag = geoJsonFeature.properties.mag;
+      depth = geoJsonFeature.properties.feature.coodinates[2];
+      // Conditionals for countries points
+      var color = "";
+      if (depth > 90) {
+        color = "red";
+      } else if (countries[i].points > 100) {
+        // fix
+        color = "blue";
+      } else if (countries[i].points > 90) {
+        //fix
+        color = "green";
+      } else {
+        color = "red";
+      }
+
+      return { radius: mag * 5, color: depth }; // play with number
+    },
   });
 
   // Sending our earthquakes layer to the createMap function
@@ -84,7 +97,7 @@ function createMap(earthquakes) {
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
     "Street Map": streetmap,
-    "Satellite": satellite
+    Satellite: satellite,
   };
 
   // Create overlay object to hold our overlay layer
@@ -109,31 +122,15 @@ function createMap(earthquakes) {
     .addTo(myMap);
 }
 
-
 // Loop through the cities array and create one marker for each city object
-for (var i = 0; i < earthquakeData.length; i++) {
+// for (var i = 0; i < earthquakeData.length; i++) {
 
-  // Conditionals for countries points
-  var color = "";
-  if (countries[i].points > 90) {
-    color = "red";
-  }
-  else if (countries[i].points > 100) {
-    color = "blue";
-  }
-  else if (countries[i].points > 90) {
-    color = "green";
-  }
-  else {
-    color = "red";
-  }
-
-  // Add circles to map
-  L.circle(countries[i].location, {
-    fillOpacity: 0.75,
-    color: "white",
-    fillColor: color,
-    // Adjust radius
-    radius: countries[i].points * 1500
-  }).bindPopup("<h1>" + countries[i].name + "</h1> <hr> <h3>Points: " + countries[i].points + "</h3>").addTo(myMap);
-}
+//   // Add circles to map
+//   L.circle(countries[i].location, {
+//     fillOpacity: 0.75,
+//     color: "white",
+//     fillColor: color,
+//     // Adjust radius
+//     radius: countries[i].points * 1500
+//   }).bindPopup("<h1>" + countries[i].name + "</h1> <hr> <h3>Points: " + countries[i].points + "</h3>").addTo(myMap);
+// }
