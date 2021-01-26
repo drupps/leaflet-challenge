@@ -27,18 +27,25 @@ function createFeatures(earthquakeData) {
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
     onEachFeature: addTooltip,
-    pointToLayer: function (geoJsonPoint, latlng) {
-      return L.circleMarker(latlng);
-    },
-    style: function (geoJsonFeature) {
-      mag = geoJsonFeature.properties.mag;
-      depth = geoJsonFeature.properties.coodinates;
-      var color = "";
-    },
+    pointToLayer: style
+
   });
 
   // Sending our earthquakes layer to the createMap function
   createMap(earthquakes);
+}
+
+function style(feature, latlng) {
+  return new L.circle(latlng, {
+    opacity: .8,
+    fillOpacity: 1,
+    fillColor: chooseColor(feature.geometry.coordinates[2]),
+    color:  "#0000000",
+    radius: markerSize(feature.properties.mag),
+    stroke: true,
+    weight: 0.5
+
+  });
 }
 
 function markerSize(mag) {
@@ -52,17 +59,17 @@ function chooseColor(depth){
 // Conditionals for countries points
   switch(true){
     case depth > 89:
-      return "#BB2528";
+      return "#E50B0B";
     case depth > 69:
-      return "#D65D42";
+      return "#FFB533";
     case depth > 49:
-      return "#EA4630";
+      return "#FFC133";
     case depth > 29:
-      return " #F8B229";
+      return " #FFDA33";
     case depth > 9:
-      return "#146B3A";
+      return "#CAFF33";
     case depth > -9:
-      return "#165B33";
+      return "#9FFF33";
   }
 }
 
@@ -104,7 +111,7 @@ function createMap(earthquakes) {
   // Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map("map", {
     center: [37.09, -95.71],
-    zoom: 5,
+    zoom: 4,
     layers: [streetmap, earthquakes],
   });
 
