@@ -32,27 +32,38 @@ function createFeatures(earthquakeData) {
     },
     style: function (geoJsonFeature) {
       mag = geoJsonFeature.properties.mag;
-      depth = geoJsonFeature.properties.feature.coodinates[2];
-      // Conditionals for countries points
+      depth = geoJsonFeature.properties.coodinates;
       var color = "";
-      if (depth > 90) {
-        color = "red";
-      } else if (countries[i].points > 100) {
-        // fix
-        color = "blue";
-      } else if (countries[i].points > 90) {
-        //fix
-        color = "green";
-      } else {
-        color = "red";
-      }
-
-      return { radius: mag * 5, color: depth }; // play with number
     },
   });
 
   // Sending our earthquakes layer to the createMap function
   createMap(earthquakes);
+}
+
+function markerSize(mag) {
+        if(mag === 0){ 
+            return 1;
+        }   
+        return mag * 10000
+      }
+
+function chooseColor(depth){
+// Conditionals for countries points
+  switch(true){
+    case depth > 89:
+      return "#BB2528";
+    case depth > 69:
+      return "#D65D42";
+    case depth > 49:
+      return "#EA4630";
+    case depth > 29:
+      return " #F8B229";
+    case depth > 9:
+      return "#146B3A";
+    case depth > -9:
+      return "#165B33";
+  }
 }
 
 function createMap(earthquakes) {
@@ -69,20 +80,6 @@ function createMap(earthquakes) {
       accessToken: API_KEY,
     }
   );
-
-  var satellite = L.tileLayer(
-    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-    {
-      attribution:
-        "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-      tileSize: 512,
-      maxZoom: 18,
-      zoomOffset: -1,
-      id: "mapbox/satellite",
-      accessToken: API_KEY,
-    }
-  );
-
   // var darkmap = L.tileLayer(
   //   "https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
   //   {
@@ -96,8 +93,7 @@ function createMap(earthquakes) {
 
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
-    "Street Map": streetmap,
-    Satellite: satellite,
+    "Street Map": streetmap
   };
 
   // Create overlay object to hold our overlay layer
